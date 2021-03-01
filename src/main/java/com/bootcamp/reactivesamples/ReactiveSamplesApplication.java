@@ -298,8 +298,6 @@ public class ReactiveSamplesApplication {
                         System.out.println("authors2020 = " + au));
 
 
-        fluxAuthors.filter()
-
     }
 
 
