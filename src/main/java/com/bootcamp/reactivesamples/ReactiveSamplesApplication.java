@@ -21,6 +21,7 @@ public class ReactiveSamplesApplication {
 //        reactiva();
 
         funcionalObjetos();
+        reactivaObjetos();
 
 
     }
@@ -190,7 +191,9 @@ public class ReactiveSamplesApplication {
         return x * x;
     }
 
-    public static void funcionalObjetos(){
+    public static void funcionalObjetos() {
+
+        System.out.println("FUNCIONAL CON OBJETOS");
 
         List<Author> authors = new ArrayList<>();
 
@@ -210,6 +213,92 @@ public class ReactiveSamplesApplication {
         author4.addBook(7, "Sentido y Sensibilidad", 2019);
 
         authors = List.of(author1, author2, author3, author4);
+
+        System.out.println("authors = " + authors);
+
+
+        var listaAuthores1Libros = authors.stream()
+                .filter(x -> x.getBooks().size() == 1)
+                .collect(Collectors.toList());
+
+        System.out.println("listaAuthores1Libros = " + listaAuthores1Libros);
+
+        var autoresLibros2020 = authors.stream()
+                .filter(au -> {
+                    System.out.println("author au = " + au);
+
+                    return au.getBooks().stream()
+                            .anyMatch(b -> b.getYear() == 2020);
+                })
+                .map(a -> a.getName())
+                .collect(Collectors.toList());
+
+//        SELECT a.name
+//        FROM author a
+//        INNER JOIN book b ON a.idauthor=b.idauthor
+//        WHERE b.year= 2020
+
+        System.out.println("autoresLibros2020 = " + autoresLibros2020);
+
+    }
+
+
+    public static void reactivaObjetos() {
+
+        System.out.println("REACTIVA CON OBJETOS");
+
+        List<Author> authors = new ArrayList<>();
+
+        Author author1 = new Author(1, "Shakespeare", 1700);
+        author1.addBook(1, "Romeo y Julieta", 2019);
+        author1.addBook(2, "Hamlet", 2020);
+
+        Author author2 = new Author(2, "Mario Vargas llosa", 1960);
+        author2.addBook(3, "La ciudad y los perros", 2018);
+        author2.addBook(4, "Lituma en los andes", 2017);
+
+        Author author3 = new Author(3, "Ciro Alegria", 1910);
+        author3.addBook(5, "Los perros hambrientos", 2020);
+        author3.addBook(6, "El mundo es ancho y ajeno", 2020);
+
+        Author author4 = new Author(4, "Jane Austen", 1800);
+        author4.addBook(7, "Sentido y Sensibilidad", 2019);
+
+        authors = List.of(author1, author2, author3, author4);
+
+        Mono.just(author1);
+        Mono.just(authors);
+        Flux.just(authors, authors);
+
+        var mono1 = Mono.just(author1);
+        var mono2 = Mono.just(author2);
+        Flux.merge(mono1, mono2)
+                .subscribe(a -> System.out.println("merge a = " + a));
+
+        Flux<Author> fluxAuthors = Flux.fromIterable(authors);
+
+        fluxAuthors
+                .filter(x -> x.getBooks().size() == 1)
+                .subscribe(author ->
+                        System.out.println("author = " + author.getName()));
+
+        // Convertir de flux a colección
+        fluxAuthors
+                .collectList()
+                .doOnNext(d -> System.out.println("d = " + d))
+                .subscribe(lista -> System.out.println("lista = " + lista));
+
+        fluxAuthors
+                .filter(au -> au.getBooks().stream()
+                        .anyMatch(b -> b.getYear() == 2020))
+                .map(au -> au.getName())
+//                .collect()
+                .collectList()
+                .subscribe(au ->
+                        System.out.println("authors2020 = " + au));
+
+
+        fluxAuthors.filter()
 
     }
 
