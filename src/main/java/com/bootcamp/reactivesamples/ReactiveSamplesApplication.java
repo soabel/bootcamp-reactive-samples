@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class ReactiveSamplesApplication {
+    private static Integer year = 2020;
 
     public static void main(String[] args) {
         SpringApplication.run(ReactiveSamplesApplication.class, args);
@@ -214,34 +215,46 @@ public class ReactiveSamplesApplication {
 
         authors = List.of(author1, author2, author3, author4);
 
-        System.out.println("authors = " + authors);
+//        System.out.println("authors = " + authors);
+//
+//
+//        var listaAuthores1Libros = authors.stream()
+//                .filter(x -> x.getBooks().size() == 1)
+//                .collect(Collectors.toList());
+//
+//        System.out.println("listaAuthores1Libros = " + listaAuthores1Libros);
+//
+//        var autoresLibros2020 = authors.stream()
+//                .filter(au -> {
+//                    System.out.println("author au = " + au);
+//
+//                    return au.getBooks().stream()
+//                            .anyMatch(b -> b.getYear() == 2020);
+//                })
+//                .map(a -> a.getName())
+//                .collect(Collectors.toList());
+//
+////        SELECT a.name
+////        FROM author a
+////        INNER JOIN book b ON a.idauthor=b.idauthor
+////        WHERE b.year= 2020
+//
+//        System.out.println("autoresLibros2020 = " + autoresLibros2020);
 
-
-        var listaAuthores1Libros = authors.stream()
-                .filter(x -> x.getBooks().size() == 1)
+        var listaLibrosMap = authors.stream()
+                .map(au -> au.getBooks())
                 .collect(Collectors.toList());
 
-        System.out.println("listaAuthores1Libros = " + listaAuthores1Libros);
+        System.out.println("listaLibrosMap = " + listaLibrosMap);
 
-        var autoresLibros2020 = authors.stream()
-                .filter(au -> {
-                    System.out.println("author au = " + au);
-
-                    return au.getBooks().stream()
-                            .anyMatch(b -> b.getYear() == 2020);
-                })
-                .map(a -> a.getName())
+        var listaLibrosFlatMap = authors.stream()
+                .flatMap(au -> au.getBooks().stream())
                 .collect(Collectors.toList());
 
-//        SELECT a.name
-//        FROM author a
-//        INNER JOIN book b ON a.idauthor=b.idauthor
-//        WHERE b.year= 2020
+        System.out.println("listaLibrosFlatMap = " + listaLibrosFlatMap);
 
-        System.out.println("autoresLibros2020 = " + autoresLibros2020);
 
     }
-
 
     public static void reactivaObjetos() {
 
@@ -270,33 +283,49 @@ public class ReactiveSamplesApplication {
         Mono.just(authors);
         Flux.just(authors, authors);
 
-        var mono1 = Mono.just(author1);
-        var mono2 = Mono.just(author2);
-        Flux.merge(mono1, mono2)
-                .subscribe(a -> System.out.println("merge a = " + a));
-
+//        var mono1 = Mono.just(author1);
+//        var mono2 = Mono.just(author2);
+//        Flux.merge(mono1, mono2)
+//                .subscribe(a -> System.out.println("merge a = " + a));
+//
         Flux<Author> fluxAuthors = Flux.fromIterable(authors);
+//
+//        fluxAuthors
+//                .filter(x -> x.getBooks().size() == 1)
+//                .subscribe(author ->
+//                        System.out.println("author = " + author.getName()));
+//
+//        // Convertir de flux a colección
+//        fluxAuthors
+//                .collectList()
+//                .doOnNext(d -> System.out.println("d = " + d))
+//                .subscribe(lista -> System.out.println("lista = " + lista));
+//
+//        fluxAuthors
+//                .filter(au -> au.getBooks().stream()
+//                        .anyMatch(b -> b.getYear() == 2020))
+//                .map(au -> au.getName())
+////                .collect()
+//                .collectList()
+//                .subscribe(au ->
+//                        System.out.println("authors2020 = " + au));
 
-        fluxAuthors
-                .filter(x -> x.getBooks().size() == 1)
-                .subscribe(author ->
-                        System.out.println("author = " + author.getName()));
 
-        // Convertir de flux a colección
-        fluxAuthors
+        fluxAuthors.map(au -> au.getBooks())
                 .collectList()
-                .doOnNext(d -> System.out.println("d = " + d))
-                .subscribe(lista -> System.out.println("lista = " + lista));
+                .subscribe(au -> System.out.println(" map-collectList au = " + au));
+
+
 
         fluxAuthors
-                .filter(au -> au.getBooks().stream()
-                        .anyMatch(b -> b.getYear() == 2020))
-                .map(au -> au.getName())
-//                .collect()
+                .flatMap(au -> {
+                    return Flux.fromIterable(au.getBooks().stream()
+                            .filter(b -> b.getYear().equals(year))
+                            .collect(Collectors.toList()));
+                })
+                .flatMap(ed -> Flux.fromIterable(ed.getEditorials()))
                 .collectList()
-                .subscribe(au ->
-                        System.out.println("authors2020 = " + au));
-
+                .subscribe(ed -> System.out.println("flatMap - editorials ed = " + ed));
 
     }
 

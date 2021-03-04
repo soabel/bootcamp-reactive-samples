@@ -1,6 +1,10 @@
+com/bootcamp/reactivesamples/Editorial.java
+ com.bootcamp.reactivesamples.Editorial
 com/bootcamp/reactivesamples/Author.java
  com.bootcamp.reactivesamples.Author
 com/bootcamp/reactivesamples/Book.java
  com.bootcamp.reactivesamples.Book
+com/bootcamp/reactivesamples/Constants.java
+ com.bootcamp.reactivesamples.Constants
 com/bootcamp/reactivesamples/ReactiveSamplesApplication.java
  com.bootcamp.reactivesamples.ReactiveSamplesApplication

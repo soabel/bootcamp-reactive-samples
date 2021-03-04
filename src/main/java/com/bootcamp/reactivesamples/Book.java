@@ -1,9 +1,14 @@
 package com.bootcamp.reactivesamples;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Book {
     private Integer id ;
     private String title;
     private Integer year;
+
+    private List<Editorial> editorials;
 
 
     public Book() {
@@ -13,6 +18,11 @@ public class Book {
         this.id = id;
         this.title = title;
         this.year = year;
+
+        this.editorials = new ArrayList<>();
+        this.editorials.add(new Editorial("Planeta"));
+        this.editorials.add(new Editorial("Santillana"));
+
     }
 
 
@@ -38,6 +48,14 @@ public class Book {
 
     public void setYear(Integer year) {
         this.year = year;
+    }
+
+    public List<Editorial> getEditorials() {
+        return editorials;
+    }
+
+    public void setEditorials(List<Editorial> editorials) {
+        this.editorials = editorials;
     }
 
     @Override
